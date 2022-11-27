@@ -26,6 +26,7 @@ tx = (
 
 simulate_transaction_data = soroban_server.simulate_transaction(tx)
 print(f"simulated transaction: {simulate_transaction_data}")
+assert simulate_transaction_data.results
 
 # The footpoint is predictable, maybe we can optimize the code to omit this step
 print(f"setting footprint and signing transaction...")

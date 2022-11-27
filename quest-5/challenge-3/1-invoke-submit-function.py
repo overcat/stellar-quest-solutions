@@ -4,6 +4,7 @@ from stellar_sdk import Network, Keypair, TransactionBuilder
 from stellar_sdk import xdr as stellar_xdr
 from stellar_sdk.soroban import SorobanServer
 from stellar_sdk.soroban.soroban_rpc import TransactionStatus
+from stellar_sdk.soroban_types import Symbol
 
 secret = "SAAPYAPTTRZMCUZFPG3G66V4ZMHTK4TWA6NS7U4F7Z3IMUD52EK4DDEV"
 contract_id = "95eb8a7f060242a729b1624149fef8348dff6bb3ae45ad33bc6e35bdb64b64c4"
@@ -21,15 +22,14 @@ tx = (
     .append_invoke_contract_function_op(
         contract_id=contract_id,
         method="submit",
-        parameters=[
-            stellar_xdr.SCVal.from_scv_symbol(stellar_xdr.SCSymbol(b"dancinRaph"))
-        ],
+        parameters=[Symbol("dancinRaph")],
     )
     .build()
 )
 
 simulate_transaction_data = soroban_server.simulate_transaction(tx)
 print(f"simulated transaction: {simulate_transaction_data}")
+assert simulate_transaction_data.results
 
 # The footpoint is predictable, maybe we can optimize the code to omit this step
 print(f"setting footprint and signing transaction...")

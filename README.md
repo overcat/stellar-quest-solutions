@@ -12,5 +12,5 @@ git clone https://github.com/overcat/stellar-quest-solutions
 cd stellar-quest-solutions
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install --force-reinstal -r requirements.txt
 ```
