@@ -14,3 +14,7 @@ python3 -m venv venv
 source venv/bin/activate
 pip install --force-reinstal -r requirements.txt
 ```
+
+## Links
+- https://quest.stellar.org/
+- https://github.com/tyvdh/soroban-quest
