@@ -337,7 +337,7 @@ If you're hitting a brick wall, and you're not sure what your next move is,
 check out [this section](../../../soroban-quest/README.md#feeling-lost) in our main README. It's
 got a couple of suggestions for where you might go from here.
 
-[how-to-play]: ../../../quest-5/challenge-1/contract/README.md#how-to-play
+[how-to-play]: ../../challenge-1/contract/README.md#how-to-play
 
 [sdk-contracttype]: https://docs.rs/soroban-sdk/latest/soroban_sdk/attr.contracttype.html
 
