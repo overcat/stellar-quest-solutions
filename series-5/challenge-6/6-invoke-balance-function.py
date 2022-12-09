@@ -51,17 +51,6 @@ while True:
     time.sleep(3)
 print(f"transaction status: {get_transaction_status_data}")
 
-
-def big_int_to_int(big_int: stellar_xdr.SCBigInt) -> int:
-    if big_int.sign == stellar_xdr.SCNumSign.ZERO:
-        return 0
-    magnitude = int.from_bytes(big_int.magnitude, byteorder="big")
-    if big_int.sign == stellar_xdr.SCNumSign.NEGATIVE:
-        return -magnitude
-    else:
-        return magnitude
-
-
 if get_transaction_status_data.status == TransactionStatus.SUCCESS:
     result = stellar_xdr.SCVal.from_xdr(get_transaction_status_data.results[0].xdr)  # type: ignore
-    print(f"amount: {big_int_to_int(result.obj.big_int)}")
+    print(f"amount: {result.obj.i128.hi.uint64 * result.obj.i128.lo.uint64}")  # type: ignore

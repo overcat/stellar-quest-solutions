@@ -15,20 +15,25 @@ network_passphrase = Network.FUTURENET_NETWORK_PASSPHRASE
 
 kp = Keypair.from_secret(secret)
 soroban_server = SorobanServer(rpc_server_url)
+
+print("installing contract...")
 source = soroban_server.load_account(kp.public_key)
+
+# with open(contract_file_path, "rb") as f:
+#     contract_bin = f.read()
 
 tx = (
     TransactionBuilder(source, network_passphrase)
     .set_timeout(300)
-    .append_deploy_contract_op(
-        contract=contract_file_path  # the path to the contract, or binary data
+    .append_install_contract_code_op(
+        contract=contract_file_path,  # the path to the contract, or binary data
+        source=kp.public_key,
     )
     .build()
 )
 
 simulate_transaction_data = soroban_server.simulate_transaction(tx)
 print(f"simulated transaction: {simulate_transaction_data}")
-assert simulate_transaction_data.results
 
 # The footpoint is predictable, maybe we can optimize the code to omit this step
 print(f"setting footprint and signing transaction...")
@@ -48,9 +53,54 @@ while True:
     time.sleep(3)
 print(f"transaction status: {get_transaction_status_data}")
 
+wasm_id = None
+if get_transaction_status_data.status == TransactionStatus.SUCCESS:
+    result = stellar_xdr.SCVal.from_xdr(get_transaction_status_data.results[0].xdr)  # type: ignore
+    wasm_id = result.obj.bin.hex()  # type: ignore
+    print(f"wasm id: {wasm_id}")
+
+assert wasm_id, "wasm id should not be empty"
+
+print("creating contract...")
+
+source = soroban_server.load_account(
+    kp.public_key
+)  # refresh source account, because the current SDK will increment the sequence number by one after building a transaction
+
+tx = (
+    TransactionBuilder(source, network_passphrase)
+    .set_timeout(300)
+    .append_create_contract_op(
+        wasm_id=wasm_id,
+        source=kp.public_key,
+    )
+    .build()
+)
+
+simulate_transaction_data = soroban_server.simulate_transaction(tx)
+print(f"simulated transaction: {simulate_transaction_data}")
+
+# The footpoint is predictable, maybe we can optimize the code to omit this step
+print(f"setting footprint and signing transaction...")
+tx.set_footpoint(simulate_transaction_data.footprint)
+tx.sign(kp)
+
+send_transaction_data = soroban_server.send_transaction(tx)
+print(f"sent transaction: {send_transaction_data}")
+
+while True:
+    print("waiting for transaction to be confirmed...")
+    get_transaction_status_data = soroban_server.get_transaction_status(
+        send_transaction_data.id
+    )
+    if get_transaction_status_data.status != TransactionStatus.PENDING:
+        break
+    time.sleep(3)
+print(f"transaction status: {get_transaction_status_data}")
+
+wasm_id = None
 if get_transaction_status_data.status == TransactionStatus.SUCCESS:
     result = stellar_xdr.SCVal.from_xdr(get_transaction_status_data.results[0].xdr)  # type: ignore
     contract_id = result.obj.bin.hex()  # type: ignore
-    print(
-        f"contract id: {contract_id}"
-    )  # 54e5ce8106820b916b57f8768e7e9f9cd94b333c9a8b4bce1ce84e125e88e5aa
+    print(f"contract id: {contract_id}")
+# 54e5ce8106820b916b57f8768e7e9f9cd94b333c9a8b4bce1ce84e125e88e5aa

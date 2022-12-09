@@ -4,7 +4,7 @@ from stellar_sdk import Network, Keypair, TransactionBuilder
 from stellar_sdk import xdr as stellar_xdr
 from stellar_sdk.soroban import SorobanServer
 from stellar_sdk.soroban.soroban_rpc import TransactionStatus
-from stellar_sdk.soroban_types import InvokerSignature, BigInt, ContractIdentifier
+from stellar_sdk.soroban_types import InvokerSignature, Int128, ContractIdentifier
 
 parent_secret = "SAAPYAPTTRZMCUZFPG3G66V4ZMHTK4TWA6NS7U4F7Z3IMUD52EK4DDEV"
 native_asset_contract_id = (
@@ -29,9 +29,9 @@ tx = (
         method="approve",
         parameters=[
             InvokerSignature(),
-            BigInt(0),
+            Int128(0),
             ContractIdentifier(asset_interop_contract_id),
-            BigInt(1_000 * 10**7),
+            Int128(1_000 * 10**7),
         ],
     )
     .build()

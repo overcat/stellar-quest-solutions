@@ -5,7 +5,7 @@ from stellar_sdk import Network, Keypair, TransactionBuilder
 from stellar_sdk import xdr as stellar_xdr
 from stellar_sdk.soroban import SorobanServer
 from stellar_sdk.soroban.soroban_rpc import TransactionStatus
-from stellar_sdk.soroban_types import AccountId, BigInt, Bytes, Uint64
+from stellar_sdk.soroban_types import AccountId, Int128, Bytes, Uint64
 
 parent_secret = "SAAPYAPTTRZMCUZFPG3G66V4ZMHTK4TWA6NS7U4F7Z3IMUD52EK4DDEV"
 child_secret = "SAPSRJQIL4WLQZMB6IYXA6FLY5TS2WX7PDFLWN3RP7AD6GS3DRHHCN54"
@@ -33,7 +33,7 @@ tx = (
         parameters=[
             AccountId(child_kp.public_key),
             Bytes(binascii.unhexlify(native_asset_contract_id)),
-            BigInt(500 * 10**7),
+            Int128(500 * 10**7),
             Uint64(1 * 10**1),
         ],
     )
